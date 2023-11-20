@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +27,42 @@ public class SellerDaoJDBC implements SellerDao{
 	@Override
 	public void insert(Seller obj) {
 		
+		PreparedStatement st = null;
 		
+		try {
+			st = conex.prepareStatement(
+					"INSERT INTO seller "
+					+"(Name, Email, BirthDate, BaseSalary, DepartmentId) "
+					+"VALUES "
+					+"(?, ?, ?, ?, ?)",
+					Statement.RETURN_GENERATED_KEYS);// Comando para retorna o id do objeto inserido
+			
+			st.setString(1, obj.getName());
+			st.setString(2, obj.getEmail());
+			st.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
+			st.setDouble(4, obj.getBaseSalary());
+			st.setInt(5, obj.getDepartment().getId());
+			
+			int rowsAffected = st.executeUpdate();
+			
+			if(rowsAffected > 0) {
+				ResultSet rs = st.getGeneratedKeys();//obter a chave gerado pelo bd para esse novo seller
+				if(rs.next()) {
+					int id = rs.getInt(1);//pegando o ID gerado pelo sql
+					obj.setId(id);//incluindo o id gerado no objeto seller conforme esta no BD
+				}
+				DB.closeResultSet(rs);//Fechando dentro do if pois o result set não existe no escopo global da consulta
+			}
+			else {
+				throw new DbException("Erro Inesperado!! nenhum linha foi afetada");
+			}
+		}
+		catch(SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+		}
 	}
 
 	@Override
