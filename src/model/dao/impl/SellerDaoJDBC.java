@@ -55,18 +55,8 @@ public class SellerDaoJDBC implements SellerDao{
 			rs = st.executeQuery();
 			
 			if(rs.next()) {
-				Department dp = new Department();
-				dp.setId(rs.getInt("DepartmentId"));
-				dp.setName(rs.getString("DepName"));
-				
-				Seller obj = new Seller();
-				obj.setId(rs.getInt("Id"));
-				obj.setName(rs.getString("Name"));
-				obj.setEmail(rs.getString("Email"));
-				obj.setBirthDate(rs.getDate("BirthDate"));
-				obj.setBaseSalary(rs.getDouble("BaseSalary"));
-				obj.setDepartment(dp);
-				
+				Department dp = instantiateDepartmen(rs); //as 2 instanciações estão como metodos para reutilização
+				Seller obj = instantiateSeller(rs, dp);
 				return obj;
 			}
 			return null;
@@ -75,17 +65,32 @@ public class SellerDaoJDBC implements SellerDao{
 			throw new DbException(e.getMessage());
 		}
 		finally {
-			DB.closeStatement(st);
-			DB.closeResultSet(rs);
-			// não precisa fechar a conexão pois ela pode ser reutilizada nos outros metodos
-			// então fecha a conexão no programa principal
+			DB.closeStatement(st); // não precisa fechar a conexão pois ela pode ser reutilizada nos outros metodos
+			DB.closeResultSet(rs); // então fecha a conexão no programa principal
 		}
 	}
 
 	@Override
 	public List<Seller> findAll() {
-		
 		return null;
+	}
+	
+	private Seller instantiateSeller(ResultSet rs, Department dp) throws SQLException {
+		Seller obj = new Seller();
+		obj.setId(rs.getInt("Id"));
+		obj.setName(rs.getString("Name"));
+		obj.setEmail(rs.getString("Email"));
+		obj.setBirthDate(rs.getDate("BirthDate"));
+		obj.setBaseSalary(rs.getDouble("BaseSalary"));
+		obj.setDepartment(dp);
+		return obj;
+	}
+
+	private Department instantiateDepartmen(ResultSet rs) throws SQLException {
+		Department dp = new Department();
+		dp.setId(rs.getInt("DepartmentId"));
+		dp.setName(rs.getString("DepName"));
+		return dp;
 	}
 
 }

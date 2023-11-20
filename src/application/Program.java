@@ -17,8 +17,8 @@ public class Program {
 		//Forma de injeção de dependencia sem o programa conhecer a implementação 
 		SellerDao sellerDao = DaoFactory.createSellerDao();
 		
+		System.out.println("=== TEST 1: seller findById ===");
 		Seller sellerDao2 = sellerDao.findById(3);
-		
 		System.out.println(sellerDao2);
 
 	}
