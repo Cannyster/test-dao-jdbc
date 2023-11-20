@@ -13,7 +13,7 @@ public class Department implements Serializable {
 		
 	}
 	
-	public Department(int id, String name) {
+	public Department(Integer id, String name) {
 		this.id = id;
 		this.name = name;
 	}
@@ -61,6 +61,6 @@ public class Department implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Department [id=" + id + ", name=" + name + "]";
+		return "Department id = " + id + ", name = " + name;
 	}
 }

@@ -51,13 +51,14 @@ public class Program {
 		System.out.println("Update realizado");
 		*/
 		
-		System.out.println("\n=== TEST 5: seller update ===");
+		System.out.println("\n=== TEST 5: seller delete ===");
 		System.out.println("Digite o id do vendedor que deseja excluir");
 		int id = sc.nextInt();
 		sellerDao.deleteById(id);
 		System.out.println("Delete realizado");
 		
 		DB.closeConnection();
+		sc.close();
 	}
 
 }
