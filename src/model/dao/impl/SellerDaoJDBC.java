@@ -43,6 +43,7 @@ public class SellerDaoJDBC implements SellerDao{
 
 	@Override
 	public Seller findById(Integer id) {
+		
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		
@@ -75,8 +76,10 @@ public class SellerDaoJDBC implements SellerDao{
 
 	@Override
 	public List<Seller> findByDepartment(Department department) {
+		
 		PreparedStatement st = null;
 		ResultSet rs = null;
+		
 		List<Seller> lista = new ArrayList<>();		
 		Map<Integer, Department> mapDepartment = new HashMap<>(); //Lista de Hashmap para evitar repetição na instanciação
 		
@@ -116,7 +119,41 @@ public class SellerDaoJDBC implements SellerDao{
 	@Override
 	public List<Seller> findAll() {
 		
-		return null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		
+		List<Seller> lista = new ArrayList<>();		
+		Map<Integer, Department> mapDepartment = new HashMap<>(); //Lista de Hashmap para evitar repetição na instanciação
+		
+		try {
+			st = conex.prepareStatement(
+					"SELECT seller.*,department.Name as DepName "
+					+"FROM seller INNER JOIN department "
+					+"ON seller.DepartmentId = department.Id "
+					+"ORDER BY Name");
+
+			rs = st.executeQuery();
+			
+			while(rs.next()) {
+				Department dp = mapDepartment.get(rs.getInt("DepartmentId"));
+				
+				if (dp == null){ // se não existir o dp na lista ele vai criar uma nova instanciar 
+					dp = instantiateDepartmen(rs);// pega os dados do resultset e instancia um novo departamento
+					mapDepartment.put(rs.getInt("DepartmentId"), dp);//Ao fim adiciona o departamento nova no mapa
+				}
+				
+				Seller obj = instantiateSeller(rs, dp);
+				lista.add(obj);
+			}
+			return lista;
+		}
+		catch(SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st); // não precisa fechar a conexão pois ela pode ser reutilizada nos outros metodos
+			DB.closeResultSet(rs); // então fecha a conexão no programa principal
+		}
 	}
 	
 	private Seller instantiateSeller(ResultSet rs, Department dp) throws SQLException {
