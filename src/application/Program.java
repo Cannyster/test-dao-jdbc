@@ -1,8 +1,9 @@
 package application;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Scanner;
 
+import db.DB;
 import model.dao.DaoFactory;
 import model.dao.SellerDao;
 import model.entities.Department;
@@ -12,12 +13,13 @@ public class Program {
 
 	public static void main(String[] args) {
 		Department obj = new Department(1, "Books");
-		
+		Scanner sc = new Scanner(System.in);
 		Seller seller = new Seller(21, "Bob", "bob@gmail.com", new Date(), 3000.0, obj);
 		
 		//Forma de injeção de dependencia sem o programa conhecer a implementação 
 		SellerDao sellerDao = DaoFactory.createSellerDao();
 		
+		/*
 		System.out.println("=== TEST 1: seller findById ===");
 		Seller sellerDao2 = sellerDao.findById(3);
 		System.out.println(sellerDao2);
@@ -47,6 +49,15 @@ public class Program {
 		seller.setEmail("martaw@outlook.com");
 		sellerDao.update(seller);
 		System.out.println("Update realizado");
+		*/
+		
+		System.out.println("\n=== TEST 5: seller update ===");
+		System.out.println("Digite o id do vendedor que deseja excluir");
+		int id = sc.nextInt();
+		sellerDao.deleteById(id);
+		System.out.println("Delete realizado");
+		
+		DB.closeConnection();
 	}
 
 }
